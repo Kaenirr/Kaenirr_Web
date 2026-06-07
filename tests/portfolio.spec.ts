@@ -45,7 +45,7 @@ test("experience renders a timeline sorted newest-first", async ({ page }) => {
 test("skills page lists all skills and filters via search", async ({ page }) => {
   await page.goto("/skills");
   const cards = page.locator("#skill-grid .skill");
-  await expect(cards).toHaveCount(6);
+  await expect(cards).toHaveCount(7);
 
   await page.locator("#skill-search").fill("blend");
   await expect(cards.filter({ hasText: "Blender" })).toBeVisible();
