@@ -1,0 +1,132 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+interface Method {
+  label: string;
+  value: string;
+  href: string;
+  icon: string;
+}
+
+const methods: Method[] = [
+  {
+    label: "Email",
+    value: "kaenirr@gmail.com",
+    href: "mailto:kaenirr@gmail.com",
+    icon: `<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>`,
+  },
+  {
+    label: "GitHub",
+    value: "github.com/Kaenirr",
+    href: "https://github.com/Kaenirr",
+    icon: `<path d="M9 19c-4 1.5-4-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.4 0C6.3 2.3 5.2 2.6 5.2 2.6a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 3.8 9c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/>`,
+  },
+  {
+    label: "LinkedIn",
+    value: "linkedin.com/in/kaenirr/",
+    href: "https://www.linkedin.com/in/kaenirr/",
+    icon: `<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>`,
+  },
+];
+
+const isExternal = (href: string) => href.startsWith("http");
+---
+
+<Layout title="Contact — Kaenirr">
+  <section class="page">
+    <h1>Contact</h1>
+    <p class="intro">
+      Get in touch — I'm open to collaborations and opportunities.
+    </p>
+
+    <div class="grid">
+      {
+        methods.map((method) => (
+          <a
+            class="glow-card method"
+            href={method.href}
+            data-tilt
+            target={isExternal(method.href) ? "_blank" : undefined}
+            rel={isExternal(method.href) ? "noopener noreferrer" : undefined}
+          >
+            <span class="glow" aria-hidden="true" />
+            <span class="content">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                set:html={method.icon}
+              />
+              <span class="text">
+                <span class="label">{method.label}</span>
+                <span class="value">{method.value}</span>
+              </span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page {
+    padding: 3rem 0;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    margin: 0 0 0.75rem;
+  }
+
+  .intro {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0 0 2rem;
+    max-width: 48ch;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .method .content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    color: var(--accent);
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  .label {
+    font-weight: 700;
+  }
+
+  .value {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>

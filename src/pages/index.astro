@@ -1,0 +1,211 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { navItems } from "../nav";
+
+const cards: Record<string, { blurb: string; icon: string }> = {
+  "/skills": {
+    blurb: "Tools & tech I build with",
+    icon: `<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>`,
+  },
+  "/experience": {
+    blurb: "Where I've worked",
+    icon: `<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>`,
+  },
+  "/projects": {
+    blurb: "Things I've made",
+    icon: `<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m12 3 8 4.5-8 4.5-8-4.5z"/><path d="M12 12v9"/>`,
+  },
+  "/contact": {
+    blurb: "Get in touch",
+    icon: `<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>`,
+  },
+};
+---
+
+<Layout title="Kaenirr — Portfolio">
+  <div class="home">
+    <section class="hero">
+      <img
+        class="avatar"
+        src="/favicon.png"
+        width="120"
+        height="120"
+        alt="Portrait of Martin"
+      />
+      <div class="intro">
+        <h1>Hi, I'm <span class="accent">Kaenirr</span>.</h1>
+        <p>
+          I a 3D artist/programmer consumed by my desire to learn
+          everything.
+        </p>
+      </div>
+    </section>
+
+    <nav class="grid" aria-label="Sections">
+      {
+        navItems.map((item) => (
+          <a class="glow-card big" href={item.href} data-tilt>
+            <span class="glow" aria-hidden="true" />
+            <span class="content">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                set:html={cards[item.href].icon}
+              />
+              <span class="text">
+                <span class="label">{item.label}</span>
+                <span class="blurb">{cards[item.href].blurb}</span>
+              </span>
+              <svg
+                class="arrow"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </span>
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</Layout>
+
+<style>
+  .home {
+    min-height: calc(100dvh - 64px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2.5rem;
+    padding: 2rem 0;
+  }
+
+  .hero,
+  .grid {
+    width: 100%;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .hero {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+  }
+
+  .avatar {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid var(--surface-raised);
+    box-shadow:
+      0 0 0 2px var(--accent),
+      var(--shadow);
+  }
+
+  .hero h1 {
+    font-size: clamp(1.9rem, 5vw, 2.75rem);
+    margin: 0 0 0.6rem;
+  }
+
+  .accent {
+    color: var(--accent);
+  }
+
+  .hero p {
+    color: var(--text-muted);
+    line-height: 1.55;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .big {
+    aspect-ratio: 1;
+  }
+
+  .big .content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.5rem;
+    gap: 0.5rem;
+  }
+
+  .icon {
+    width: 34px;
+    height: 34px;
+    color: var(--accent);
+  }
+
+  .text {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .label {
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .blurb {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  .arrow {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    width: 22px;
+    height: 22px;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .big:hover .arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  @media (max-width: 560px) {
+    .hero {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.25rem;
+    }
+
+    .grid {
+      grid-template-columns: 1fr;
+    }
+
+    .big {
+      aspect-ratio: auto;
+      min-height: 130px;
+    }
+  }
+</style>

@@ -1,0 +1,71 @@
+---
+---
+
+<button id="theme-toggle" type="button" aria-label="Toggle color theme">
+  <svg class="icon sun" viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path
+      d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"
+    ></path>
+  </svg>
+  <svg class="icon moon" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+  </svg>
+</button>
+
+<style>
+  #theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      transform 0.15s ease;
+  }
+
+  #theme-toggle:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .icon {
+    grid-area: 1 / 1;
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  :global([data-theme="light"]) .moon,
+  :global([data-theme="dark"]) .sun {
+    opacity: 0;
+    transform: scale(0.5) rotate(-45deg);
+  }
+
+  :global([data-theme="light"]) .sun,
+  :global([data-theme="dark"]) .moon {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById("theme-toggle");
+  toggle?.addEventListener("click", () => {
+    const next =
+      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem("theme", next);
+  });
+</script>

@@ -1,0 +1,138 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { skills } from "../data/skills";
+---
+
+<Layout title="Skills — Kaenirr">
+  <section class="page">
+    <h1>Skills</h1>
+
+    <input
+      id="skill-search"
+      class="search"
+      type="search"
+      placeholder="Search skills…"
+      aria-label="Search skills"
+      autocomplete="off"
+    />
+
+    <div class="grid" id="skill-grid">
+      {
+        skills.map((skill) => (
+          <button
+            class="glow-card skill"
+            type="button"
+            data-tilt
+            data-skill={skill.id}
+            data-name={skill.name.toLowerCase()}
+            data-category={skill.category.toLowerCase()}
+          >
+            <span class="glow" aria-hidden="true" />
+            <span class="content">
+              <span class="name">{skill.name}</span>
+              <span class="cat">{skill.category}</span>
+            </span>
+          </button>
+        ))
+      }
+    </div>
+
+    <p class="empty" id="skill-empty" hidden>
+      No skills match “<span></span>”.
+    </p>
+  </section>
+</Layout>
+
+<style>
+  .page {
+    padding: 3rem 0;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    margin: 0 0 1.5rem;
+  }
+
+  .search {
+    width: 100%;
+    max-width: 360px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 2rem;
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color 0.2s ease;
+  }
+
+  .search::placeholder {
+    color: var(--text-muted);
+  }
+
+  .search:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+
+  .skill {
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .skill[hidden] {
+    display: none;
+  }
+
+  .skill .content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1.25rem;
+  }
+
+  .name {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .cat {
+    font-size: 0.78rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .empty {
+    color: var(--text-muted);
+  }
+</style>
+
+<script>
+  const input = document.getElementById("skill-search") as HTMLInputElement;
+  const cards = [
+    ...document.querySelectorAll<HTMLElement>("#skill-grid .skill"),
+  ];
+  const empty = document.getElementById("skill-empty") as HTMLElement;
+  const emptyTerm = empty.querySelector("span") as HTMLElement;
+
+  input?.addEventListener("input", () => {
+    const query = input.value.trim().toLowerCase();
+    let visible = 0;
+    for (const card of cards) {
+      const match =
+        card.dataset.name!.includes(query) ||
+        card.dataset.category!.includes(query);
+      card.hidden = !match;
+      if (match) visible++;
+    }
+    empty.hidden = visible > 0;
+    emptyTerm.textContent = input.value.trim();
+  });
+</script>

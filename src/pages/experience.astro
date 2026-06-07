@@ -1,0 +1,241 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SkillTag from "../components/SkillTag.astro";
+
+interface Entry {
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  start: string;
+  end: string | null;
+  summary: string;
+  skills?: string[];
+}
+
+const entries: Entry[] = [
+  {
+    title: "3D Artist/Programmer",
+    company: "Trisgram ",
+    location: "Pilsen",
+    type: "Full-time",
+    start: "2022-09",
+    end: null,
+    summary: "Where it began.",
+    skills: ["csharp", "unity", "blender", "substance-painter"],
+  },
+];
+
+const toMonths = (ym: string) => {
+  const [y, m] = ym.split("-").map(Number);
+  return y * 12 + (m - 1);
+};
+
+const nowMonths = (() => {
+  const d = new Date();
+  return d.getFullYear() * 12 + d.getMonth();
+})();
+
+const formatMonth = (ym: string | null) => {
+  if (!ym) return "Present";
+  const [y, m] = ym.split("-").map(Number);
+  return new Date(y, m - 1).toLocaleString("en", {
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const formatDuration = (start: string, end: string | null) => {
+  const total = (end ? toMonths(end) : nowMonths) - toMonths(start) + 1;
+  const years = Math.floor(total / 12);
+  const months = total % 12;
+  return [years && `${years} yr`, months && `${months} mo`]
+    .filter(Boolean)
+    .join(" ");
+};
+
+const sorted = [...entries].sort((a, b) => toMonths(b.start) - toMonths(a.start));
+---
+
+<Layout title="Experience — Kaenirr">
+  <section class="page">
+    <h1>Experience</h1>
+
+    <ol class="timeline">
+      {
+        sorted.map((entry) => (
+          <li class="entry">
+            <span class="dot" aria-hidden="true" />
+            <article class="glow-card card" data-tilt>
+              <span class="glow" aria-hidden="true" />
+              <div class="content">
+                <header>
+                  <h2>{entry.title}</h2>
+                  <ul class="meta">
+                    <li>{entry.company}</li>
+                    <li>{entry.location}</li>
+                    <li>{entry.type}</li>
+                  </ul>
+                </header>
+
+                <p class="period">
+                  {formatMonth(entry.start)} — {formatMonth(entry.end)}
+                  <span class="duration">· {formatDuration(entry.start, entry.end)}</span>
+                </p>
+
+                <p class="summary">{entry.summary}</p>
+
+                <ul class="skills">
+                  {(entry.skills ?? []).map((skill) => (
+                    <li>
+                      <SkillTag id={skill} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+</Layout>
+
+<style>
+  .page {
+    padding: 3rem 0;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    margin: 0 0 2.5rem;
+  }
+
+  .timeline {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 16px;
+    width: 2px;
+    background: linear-gradient(var(--accent), transparent);
+  }
+
+  .entry {
+    position: relative;
+    padding-left: 48px;
+    margin-bottom: 2rem;
+  }
+
+  .dot {
+    position: absolute;
+    left: 16px;
+    top: 28px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--accent);
+    transform: translateX(-50%);
+  }
+
+  .card {
+    padding: 1.5rem;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .meta li {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .period {
+    margin: 0;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .duration {
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .summary {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 820px) {
+    .timeline::before {
+      left: 50%;
+    }
+
+    .entry {
+      width: 50%;
+      padding-left: 0;
+    }
+
+    .entry:nth-child(odd) {
+      margin-left: auto;
+      padding-left: 40px;
+    }
+
+    .entry:nth-child(even) {
+      padding-right: 40px;
+    }
+
+    .dot {
+      top: 28px;
+    }
+
+    .entry:nth-child(odd) .dot {
+      left: 0;
+    }
+
+    .entry:nth-child(even) .dot {
+      left: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,95 @@
+---
+import { navItems, siteName } from "../nav";
+import ThemeToggle from "./ThemeToggle.astro";
+
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+---
+
+<header>
+  <nav class="container">
+    <a class="brand" href="/">{siteName}</a>
+
+    <ul class="links">
+      {
+        navItems.map((item) => (
+          <li>
+            <a href={item.href} aria-current={path === item.href ? "page" : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="toggle-slot">
+      <ThemeToggle />
+    </div>
+  </nav>
+</header>
+
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+
+  nav {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: 64px;
+  }
+
+  .brand {
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 0.02em;
+  }
+
+  .links {
+    display: flex;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    justify-self: center;
+  }
+
+  .links a {
+    position: relative;
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition:
+      color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .links a:hover {
+    color: var(--text);
+    background: var(--accent-soft);
+  }
+
+  .links a[aria-current="page"] {
+    color: var(--accent);
+  }
+
+  .toggle-slot {
+    justify-self: end;
+  }
+
+  @media (max-width: 560px) {
+    .links a {
+      padding: 0.4rem 0.55rem;
+      font-size: 0.9rem;
+    }
+    .brand {
+      font-size: 1rem;
+    }
+  }
+</style>

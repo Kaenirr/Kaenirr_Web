@@ -1,0 +1,111 @@
+:root {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --text: #14161a;
+  --text-muted: #5a616b;
+  --border: #e2e5ea;
+  --accent: #6d5dfc;
+  --accent-soft: rgba(109, 93, 252, 0.18);
+  --glow: rgba(109, 93, 252, 0.55);
+  --shadow: 0 10px 30px rgba(20, 22, 26, 0.08);
+  --radius: 16px;
+  --maxw: 960px;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #0c0d10;
+  --surface: #15171c;
+  --surface-raised: #1b1e25;
+  --text: #f2f4f8;
+  --text-muted: #9aa1ad;
+  --border: #262a32;
+  --accent: #8b7dff;
+  --accent-soft: rgba(139, 125, 255, 0.16);
+  --glow: rgba(139, 125, 255, 0.6);
+  --shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.glow-card {
+  position: relative;
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition:
+    transform 0.4s ease,
+    border-color 0.3s ease;
+}
+
+.glow-card:hover {
+  border-color: var(--accent);
+  transform: perspective(800px) rotateX(var(--ry, 0deg)) rotateY(var(--rx, 0deg));
+  transition-duration: 0.08s;
+  will-change: transform;
+}
+
+.glow-card > .glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(
+    280px circle at var(--mx, 50%) var(--my, 50%),
+    var(--glow),
+    transparent 60%
+  );
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.glow-card:hover > .glow {
+  opacity: 1;
+}
+
+.glow-card > .content {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-card:hover {
+    transform: none;
+  }
+}

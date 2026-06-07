@@ -1,0 +1,69 @@
+---
+import SkillTag from "./SkillTag.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  href?: string;
+  tags?: string[];
+}
+
+const { title, description, href = "#", tags = [] } = Astro.props;
+---
+
+<article class="glow-card card" data-tilt>
+  <span class="glow" aria-hidden="true"></span>
+  <a class="card-link" href={href} aria-label={title}></a>
+  <span class="content">
+    <span class="title">{title}</span>
+    <span class="description">{description}</span>
+    {
+      tags.length > 0 && (
+        <span class="tags">
+          {tags.map((t) => (
+            <SkillTag id={t} />
+          ))}
+        </span>
+      )
+    }
+  </span>
+</article>
+
+<style>
+  .card {
+    padding: 1.5rem;
+  }
+
+  .card-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: none;
+  }
+
+  .title {
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .description {
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    pointer-events: auto;
+  }
+</style>

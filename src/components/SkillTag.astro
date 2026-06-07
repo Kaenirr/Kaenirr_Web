@@ -1,0 +1,49 @@
+---
+import { skillById } from "../data/skills";
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+const skill = skillById(id);
+---
+
+{
+  skill ? (
+    <button class="skill-tag" type="button" data-skill={skill.id}>
+      {skill.name}
+    </button>
+  ) : (
+    <span class="skill-tag plain">{id}</span>
+  )
+}
+
+<style>
+  .skill-tag {
+    font: inherit;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      filter 0.15s ease;
+  }
+
+  button.skill-tag:hover {
+    border-color: var(--accent);
+    filter: brightness(1.1);
+  }
+
+  .skill-tag.plain {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text-muted);
+    cursor: default;
+  }
+</style>

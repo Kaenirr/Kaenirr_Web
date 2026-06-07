@@ -1,0 +1,37 @@
+---
+import NavBar from "../components/NavBar.astro";
+import SkillToast from "../components/SkillToast.astro";
+import "../styles/theme.css";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <title>{title}</title>
+    <script is:inline>
+      const stored = localStorage.getItem("theme");
+      const prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme =
+        stored ?? (prefersDark ? "dark" : "light");
+    </script>
+  </head>
+  <body>
+    <NavBar />
+    <main class="container">
+      <slot />
+    </main>
+    <SkillToast />
+    <script>
+      import "../scripts/tilt";
+    </script>
+  </body>
+</html>

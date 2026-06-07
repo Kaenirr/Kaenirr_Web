@@ -1,0 +1,37 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+
+const projects = [
+  {
+    title: "Project Test",
+    description: "Lorem Ipsum",
+    href: "#",
+    tags: ["unity", "csharp", "blender"],
+  },
+];
+---
+
+<Layout title="Projects — Kaenirr">
+  <section class="page">
+    <h1>Projects</h1>
+    <div class="grid">
+      {projects.map((project) => <ProjectCard {...project} />)}
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page {
+    padding: 3rem 0;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    margin: 0 0 2rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+</style>
