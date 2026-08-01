@@ -1,5 +1,7 @@
 ---
+import { Picture } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
+import avatar from "../assets/avatar.png";
 import { navItems } from "../nav";
 
 const cards: Record<string, { blurb: string; icon: string }> = {
@@ -25,18 +27,24 @@ const cards: Record<string, { blurb: string; icon: string }> = {
 <Layout title="Kaenirr — Portfolio">
   <div class="home">
     <section class="hero">
-      <img
-        class="avatar"
-        src="/favicon.png"
-        width="120"
-        height="120"
-        alt="Portrait of Martin"
-      />
+      <div class="avatar">
+        <Picture
+          src={avatar}
+          formats={["avif", "webp"]}
+          fallbackFormat="webp"
+          widths={[120, 240]}
+          sizes="120px"
+          width={120}
+          height={120}
+          alt="Portrait of Martin"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
       <div class="intro">
         <h1>Hi, I'm <span class="accent">Kaenirr</span>.</h1>
         <p>
-          I a 3D artist/programmer consumed by my desire to learn
-          everything.
+          I'm a 3D artist/programmer consumed by my desire to learn everything.
         </p>
       </div>
     </section>
@@ -109,11 +117,20 @@ const cards: Record<string, { blurb: string; icon: string }> = {
     flex-shrink: 0;
     width: 120px;
     height: 120px;
+    overflow: hidden;
     border-radius: 50%;
     border: 3px solid var(--surface-raised);
     box-shadow:
       0 0 0 2px var(--accent),
       var(--shadow);
+  }
+
+  .avatar :global(picture),
+  .avatar :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .hero h1 {
