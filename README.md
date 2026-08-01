@@ -39,17 +39,19 @@ src/
     projects.astro           # project grid
     contact.astro            # contact methods (email, GitHub, LinkedIn)
   data/skills.ts             # single source of truth for skills
+  lib/duration.ts            # month math shared by the experience page and its client script
   nav.ts                     # nav items + site name
   scripts/tilt.ts            # cursor tilt + underglow for [data-tilt] cards
   styles/theme.css           # color tokens + shared .glow-card utilities
-public/                      # static assets served as-is (favicon.png, CNAME)
+  assets/avatar.png          # source portrait — avatar, favicon and touch icon are derived at build
+public/                      # static assets served as-is (CNAME)
 ```
 
 ## Editing content
 
 - **Skills** — edit [`src/data/skills.ts`](src/data/skills.ts). Each skill has an `id`, `name`, `category`, `description`.
 - **Skill tags** — anywhere (experience, projects) a tag value that matches a skill `id` becomes clickable and opens the skill toast; any other value renders as a plain pill. Add new clickable skills by adding them to `skills.ts`.
-- **Experience** — edit the `entries` array in [`src/pages/experience.astro`](src/pages/experience.astro). Use `start`/`end` as `"YYYY-MM"`; set `end: null` for a current role. Entries sort newest-first automatically.
+- **Experience** — edit the `entries` array in [`src/pages/experience.astro`](src/pages/experience.astro). Use `start`/`end` as `"YYYY-MM"`; set `end: null` for a current role. Entries sort newest-first automatically, and an ongoing role's duration is recomputed in the browser so it never goes stale between deploys.
 - **Projects** — edit the `projects` array in [`src/pages/projects.astro`](src/pages/projects.astro).
 - **Nav / name** — [`src/nav.ts`](src/nav.ts).
 - **Theme colors** — the `:root` and `[data-theme="dark"]` token blocks in [`src/styles/theme.css`](src/styles/theme.css). Components only reference `var(--…)`.

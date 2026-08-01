@@ -80,7 +80,6 @@ a {
   border-color: var(--accent);
   transform: perspective(800px) rotateX(var(--ry, 0deg)) rotateY(var(--rx, 0deg));
   transition-duration: 0.08s;
-  will-change: transform;
 }
 
 .glow-card > .glow {

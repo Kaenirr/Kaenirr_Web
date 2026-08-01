@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { formatDuration } from "../src/lib/duration";
 
 const pages = [
   { href: "/skills", heading: "Skills" },
@@ -40,6 +41,46 @@ test("experience renders a timeline sorted newest-first", async ({ page }) => {
     );
   const descending = [...startYears].sort((a, b) => b - a);
   expect(startYears).toEqual(descending);
+});
+
+test("ongoing role duration is recomputed in the browser, not frozen at build", async ({
+  page,
+}) => {
+  await page.goto("/experience");
+  const live = page.locator(".duration[data-ongoing-since]").first();
+  const start = await live.getAttribute("data-ongoing-since");
+  await expect(live).toHaveText(`· ${formatDuration(start!, null)}`);
+});
+
+test("avatar is served as an optimized build asset, not the raw favicon", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const img = page.locator(".avatar img");
+  expect(await img.getAttribute("src")).toMatch(/\/_astro\//);
+  expect(await img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+  await expect(page.locator(".avatar source[type='image/avif']")).toHaveCount(1);
+});
+
+test("favicon link resolves to a real asset", async ({ page, request }) => {
+  await page.goto("/");
+  const href = await page.locator("link[rel='icon']").getAttribute("href");
+  expect((await request.get(href!)).status()).toBe(200);
+});
+
+test("tilt tracks the cursor and promotes the card only while hovered", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const card = page.locator("nav[aria-label='Sections'] a").first();
+  const inlineStyle = () => card.evaluate((el: HTMLElement) => el.style.cssText);
+
+  await card.hover();
+  await expect.poll(inlineStyle).toContain("--mx");
+  expect(await inlineStyle()).toContain("will-change");
+
+  await page.mouse.move(0, 0);
+  await expect.poll(inlineStyle).not.toContain("will-change");
 });
 
 test("skills page lists all skills and filters via search", async ({ page }) => {

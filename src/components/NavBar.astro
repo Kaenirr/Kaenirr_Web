@@ -32,9 +32,18 @@ const path = Astro.url.pathname.replace(/\/$/, "") || "/";
     position: sticky;
     top: 0;
     z-index: 10;
-    backdrop-filter: blur(10px);
-    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    background: var(--bg);
     border-bottom: 1px solid var(--border);
+  }
+
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    @media (prefers-reduced-transparency: no-preference) {
+      header {
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+        background: color-mix(in srgb, var(--bg) 82%, transparent);
+      }
+    }
   }
 
   nav {

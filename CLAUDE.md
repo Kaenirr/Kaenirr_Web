@@ -24,10 +24,12 @@ src/
     projects.astro           # project grid (ProjectCard)
     contact.astro            # email / GitHub / LinkedIn cards (external links open in new tab)
   data/skills.ts             # single source of truth for skills (id, name, category, description)
+  lib/duration.ts            # YYYY-MM month math; shared by the experience page and its client script
   nav.ts                     # nav items + site name
   scripts/tilt.ts            # cursor-tracking 3D tilt + underglow for any [data-tilt] element
   styles/theme.css           # color tokens (:root / [data-theme="dark"]) + shared .glow-card utilities
-public/                      # served as-is: favicon.png (round avatar), CNAME (kaenirr.com)
+  assets/avatar.png          # source portrait; astro:assets derives the avatar, favicon, apple-touch-icon
+public/                      # served as-is: CNAME (kaenirr.com)
 tests/portfolio.spec.ts      # Playwright e2e
 ```
 
@@ -36,7 +38,9 @@ tests/portfolio.spec.ts      # Playwright e2e
 - **Single source of truth.** Nav items live in `src/nav.ts`; skills live in `src/data/skills.ts`. The home buttons, nav bar, and skill tags all map over these — add an entry, not edits across files.
 - **Skill click-through, globally, with no navigation.** `SkillToast.astro` is mounted once in the Layout and listens (delegated) for clicks on any `[data-skill]` element anywhere — experience, projects, or the skills page. It fills a `<dialog>` and `showModal()`s it. There are intentionally **no per-skill pages and no redirects**. `SkillTag` renders a known skill (id present in `skills.ts`) as a `<button data-skill>`; anything else becomes a plain, non-clickable pill.
 - **Clickable card with clickable children.** A project card links to the project *and* contains clickable skill tags. Nesting interactive elements in an `<a>` is invalid HTML, so `ProjectCard` uses the overlay-link pattern: an absolutely-positioned `.card-link` covers the card (z-index 1), `.content` sits above it with `pointer-events: none`, and `.tags` re-enables `pointer-events` so the tag buttons stay clickable.
-- **`.glow-card` is the shared visual primitive.** Defined in `theme.css`; used by home buttons, project cards, experience cards, skill cards. The tilt/glow transform and `will-change` are applied **only on `:hover`** — at rest the card has `transform: none` so text/SVG rasterize crisply (keeping them composited at rest caused blurry icons).
+- **`.glow-card` is the shared visual primitive.** Defined in `theme.css`; used by home buttons, project cards, experience cards, skill cards. The tilt/glow transform is applied **only on `:hover`** — at rest the card has `transform: none` so text/SVG rasterize crisply (keeping them composited at rest caused blurry icons). `will-change: transform` is **not** in the CSS: a `:hover` rule promotes the layer in the same frame the animation starts, which is too late to help. `tilt.ts` sets it on `pointerenter` and clears it on `pointerleave` instead.
+- **Tilt reads layout once per hover.** `tilt.ts` measures the card in *page* space on `pointerenter` (`rect.left + scrollX`) and compares against `event.pageX/pageY`, so `pointermove` never calls `getBoundingClientRect()` — no forced synchronous layout at pointer rate. Writes are coalesced into a single `requestAnimationFrame`; the cached measurement is refreshed only on `resize`.
+- **Build-time dates go stale on a static site.** An ongoing role's duration is rendered at build time as a no-JS fallback and carries `data-ongoing-since`; a client script in `experience.astro` recomputes it from the same [src/lib/duration.ts](src/lib/duration.ts) so the page can't drift between deploys. Never compute a "now"-relative string only in frontmatter.
 
 ## Theming
 
