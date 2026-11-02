@@ -1,6 +1,6 @@
 # Kaenirr — Portfolio
 
-Personal portfolio site. Static, dark/light themed, deployed to GitHub Pages on a custom domain.
+Personal portfolio site. Static, dark/light themed, deployed to Cloudflare Pages on a custom domain.
 
 **Stack:** [Astro](https://astro.build) + TypeScript · zero client JS by default (only a small theme toggle, card tilt, and skill toast ship to the browser) · vanilla CSS with custom properties · Playwright for e2e.
 
@@ -44,7 +44,7 @@ src/
   scripts/tilt.ts            # cursor tilt + underglow for [data-tilt] cards
   styles/theme.css           # color tokens + shared .glow-card utilities
   assets/avatar.png          # source portrait — avatar, favicon and touch icon are derived at build
-public/                      # static assets served as-is (CNAME)
+public/                      # static assets served as-is
 ```
 
 ## Editing content
@@ -63,9 +63,10 @@ Colors are CSS custom properties. The active theme is stored in `localStorage` (
 
 ## Deploy
 
-Pushing to `main` triggers [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml): it runs the Playwright suite, builds with Astro, and publishes to GitHub Pages. A red test run blocks the deploy.
+Pushing to `main` triggers [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml): it runs the Playwright suite, builds with Astro, and uploads `dist/` to Cloudflare Pages with Wrangler. A red test run blocks the deploy. Pull requests run the tests only.
 
 One-time setup:
 
-1. Repo **Settings → Pages → Source = "GitHub Actions"**.
-2. Custom domain: `site` is set in [`astro.config.mjs`](astro.config.mjs) and `public/CNAME` holds `kaenirr.com` — point the domain's DNS at GitHub Pages.
+1. Cloudflare dashboard → **Workers & Pages → Create → Pages → Direct Upload**, project name `kaenirr-web` (don't connect Git — the workflow deploys so tests stay a gate).
+2. Create an API token with **Account → Cloudflare Pages → Edit**, then add repo secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+3. Project → **Custom domains** → add `kaenirr.com`. `site` in [`astro.config.mjs`](astro.config.mjs) already points at it.
