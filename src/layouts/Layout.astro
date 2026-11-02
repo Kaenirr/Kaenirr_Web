@@ -3,6 +3,7 @@ import { getImage } from "astro:assets";
 import NavBar from "../components/NavBar.astro";
 import SkillToast from "../components/SkillToast.astro";
 import avatar from "../assets/avatar.png";
+import { locales, localizePath, toLocale, unlocalizePath } from "../i18n";
 import "../styles/theme.css";
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
 }
 
 const { title } = Astro.props;
+const locale = toLocale(Astro.params.lang);
+const page = unlocalizePath(Astro.url.pathname);
 
 const favicon = await getImage({
   src: avatar,
@@ -27,13 +30,18 @@ const appleTouchIcon = await getImage({
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href={favicon.src} type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href={appleTouchIcon.src} sizes="180x180" />
     <title>{title}</title>
+    {
+      locales.map((l) => (
+        <link rel="alternate" hreflang={l} href={new URL(localizePath(page, l), Astro.site)} />
+      ))
+    }
     <script is:inline>
       const stored = localStorage.getItem("theme");
       const prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;

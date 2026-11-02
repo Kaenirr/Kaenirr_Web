@@ -1,20 +1,27 @@
 ---
 import { navItems, siteName } from "../nav";
+import { localeLabels, localizePath, toLocale, ui, unlocalizePath } from "../i18n";
 import ThemeToggle from "./ThemeToggle.astro";
 
-const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const locale = toLocale(Astro.params.lang);
+const otherLocale = locale === "en" ? "cs" : "en";
+const t = ui[locale];
+const page = unlocalizePath(Astro.url.pathname);
 ---
 
 <header>
   <nav class="container">
-    <a class="brand" href="/">{siteName}</a>
+    <a class="brand" href={localizePath("/", locale)}>{siteName}</a>
 
     <ul class="links">
       {
         navItems.map((item) => (
           <li>
-            <a href={item.href} aria-current={path === item.href ? "page" : undefined}>
-              {item.label}
+            <a
+              href={localizePath(item.href, locale)}
+              aria-current={page === item.href ? "page" : undefined}
+            >
+              {t.nav[item.key]}
             </a>
           </li>
         ))
@@ -22,7 +29,17 @@ const path = Astro.url.pathname.replace(/\/$/, "") || "/";
     </ul>
 
     <div class="toggle-slot">
-      <ThemeToggle />
+      <a
+        id="lang-toggle"
+        href={localizePath(page, otherLocale)}
+        hreflang={otherLocale}
+        lang={otherLocale}
+        aria-label={t.switchLanguage}
+        title={t.switchLanguage}
+      >
+        {localeLabels[otherLocale]}
+      </a>
+      <ThemeToggle label={t.toggleTheme} />
     </div>
   </nav>
 </header>
@@ -89,12 +106,53 @@ const path = Astro.url.pathname.replace(/\/$/, "") || "/";
   }
 
   .toggle-slot {
+    display: flex;
+    gap: 0.5rem;
     justify-self: end;
   }
 
+  #lang-toggle {
+    display: grid;
+    place-items: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    transition:
+      border-color 0.2s ease,
+      transform 0.15s ease;
+  }
+
+  #lang-toggle:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
   @media (max-width: 560px) {
+    nav {
+      grid-template-columns: 1fr auto;
+      grid-template-rows: 56px auto;
+      height: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .links {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      justify-self: stretch;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0 0.25rem;
+    }
+
     .links a {
-      padding: 0.4rem 0.55rem;
+      padding: 0.4rem 0.45rem;
       font-size: 0.9rem;
     }
     .brand {

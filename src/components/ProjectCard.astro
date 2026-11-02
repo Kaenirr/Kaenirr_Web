@@ -8,12 +8,12 @@ interface Props {
   tags?: string[];
 }
 
-const { title, description, href = "#", tags = [] } = Astro.props;
+const { title, description, href, tags = [] } = Astro.props;
 ---
 
 <article class="glow-card card" data-tilt>
   <span class="glow" aria-hidden="true"></span>
-  <a class="card-link" href={href} aria-label={title}></a>
+  {href && <a class="card-link" href={href} aria-label={title} />}
   <span class="content">
     <span class="title">{title}</span>
     <span class="description">{description}</span>

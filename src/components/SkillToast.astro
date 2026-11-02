@@ -1,10 +1,14 @@
 ---
-import { skills } from "../data/skills";
+import { skillsFor } from "../data/skills";
+import { toLocale, ui } from "../i18n";
+
+const locale = toLocale(Astro.params.lang);
+const skills = skillsFor(locale);
 ---
 
 <dialog id="skill-toast" class="skill-toast" aria-labelledby="skill-toast-name">
   <div class="inner">
-    <button class="close" type="button" aria-label="Close">✕</button>
+    <button class="close" type="button" aria-label={ui[locale].close}>✕</button>
     <span class="cat"></span>
     <h2 id="skill-toast-name" class="name"></h2>
     <div class="desc"></div>
