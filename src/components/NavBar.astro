@@ -146,11 +146,13 @@ const page = unlocalizePath(Astro.url.pathname);
       grid-column: 1 / -1;
       grid-row: 2;
       justify-self: stretch;
+      flex-wrap: wrap;
       justify-content: space-between;
+      gap: 0 0.25rem;
     }
 
     .links a {
-      padding: 0.4rem 0.55rem;
+      padding: 0.4rem 0.45rem;
       font-size: 0.9rem;
     }
     .brand {
