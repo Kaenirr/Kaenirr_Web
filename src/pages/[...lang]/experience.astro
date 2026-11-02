@@ -1,36 +1,51 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import SkillTag from "../components/SkillTag.astro";
-import { formatDuration, monthIndex } from "../lib/duration";
+import Layout from "../../layouts/Layout.astro";
+import SkillTag from "../../components/SkillTag.astro";
+import { formatDuration, monthIndex } from "../../lib/duration";
+import { localeStaticPaths, toLocale, ui, type Localized } from "../../i18n";
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = toLocale(Astro.params.lang);
+const t = ui[locale];
 
 interface Entry {
-  title: string;
+  title: Localized<string>;
   company: string;
-  location: string;
-  type: string;
+  companyUrl?: string;
+  location: Localized<string>;
+  type: Localized<string>;
   start: string;
   end: string | null;
-  summary: string;
+  summary: Localized<string>;
   skills?: string[];
 }
 
 const entries: Entry[] = [
   {
-    title: "3D Artist/Programmer",
+    title: { en: "3D Artist/Programmer", cs: "3D grafik/programátor" },
     company: "Trisgram",
-    location: "Pilsen",
-    type: "Full-time",
+    companyUrl: "https://trisgram.com",
+    location: { en: "Pilsen", cs: "Plzeň" },
+    type: { en: "Full-time", cs: "Plný úvazek" },
     start: "2022-09",
     end: null,
-    summary: "Where it began.",
-    skills: ["csharp", "unity", "blender", "substance-painter"],
+    summary: { en: "Where it began.", cs: "Tady to všechno začalo." },
+    skills: [
+      "csharp",
+      "unity",
+      "trisgine",
+      "blender",
+      "substance-painter",
+      "drone-pilot",
+    ],
   },
 ];
 
 const formatMonth = (ym: string | null) => {
-  if (!ym) return "Present";
+  if (!ym) return t.experience.present;
   const [y, m] = ym.split("-").map(Number);
-  return new Date(y, m - 1).toLocaleString("en", {
+  return new Date(y, m - 1).toLocaleString(locale, {
     month: "short",
     year: "numeric",
   });
@@ -41,9 +56,9 @@ const sorted = [...entries].sort(
 );
 ---
 
-<Layout title="Experience — Kaenirr">
+<Layout title={`${t.nav.experience} — Kaenirr`}>
   <section class="page">
-    <h1>Experience</h1>
+    <h1>{t.nav.experience}</h1>
 
     <ol class="timeline">
       {
@@ -54,11 +69,19 @@ const sorted = [...entries].sort(
               <span class="glow" aria-hidden="true" />
               <div class="content">
                 <header>
-                  <h2>{entry.title}</h2>
+                  <h2>{entry.title[locale]}</h2>
                   <ul class="meta">
-                    <li>{entry.company}</li>
-                    <li>{entry.location}</li>
-                    <li>{entry.type}</li>
+                    <li>
+                      {entry.companyUrl ? (
+                        <a href={entry.companyUrl} target="_blank" rel="noopener noreferrer">
+                          {entry.company} <span aria-hidden="true">↗</span>
+                        </a>
+                      ) : (
+                        entry.company
+                      )}
+                    </li>
+                    <li>{entry.location[locale]}</li>
+                    <li>{entry.type[locale]}</li>
                   </ul>
                 </header>
 
@@ -68,11 +91,11 @@ const sorted = [...entries].sort(
                     class="duration"
                     data-ongoing-since={entry.end === null ? entry.start : undefined}
                   >
-                    · {formatDuration(entry.start, entry.end)}
+                    · {formatDuration(entry.start, entry.end, locale)}
                   </span>
                 </p>
 
-                <p class="summary">{entry.summary}</p>
+                <p class="summary">{entry.summary[locale]}</p>
 
                 <ul class="skills">
                   {(entry.skills ?? []).map((skill) => (
@@ -91,12 +114,15 @@ const sorted = [...entries].sort(
 </Layout>
 
 <script>
-  import { formatDuration } from "../lib/duration";
+  import { formatDuration } from "../../lib/duration";
+  import { toLocale } from "../../i18n";
+
+  const locale = toLocale(document.documentElement.lang);
 
   for (const el of document.querySelectorAll<HTMLElement>(
     "[data-ongoing-since]",
   )) {
-    el.textContent = `· ${formatDuration(el.dataset.ongoingSince!, null)}`;
+    el.textContent = `· ${formatDuration(el.dataset.ongoingSince!, null, locale)}`;
   }
 </script>
 
@@ -177,6 +203,30 @@ const sorted = [...entries].sort(
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text-muted);
+  }
+
+  .meta li:has(> a) {
+    padding: 0;
+    transition:
+      border-color 0.15s ease,
+      background 0.15s ease;
+  }
+
+  .meta a {
+    display: block;
+    padding: 0.2rem 0.6rem;
+    border-radius: inherit;
+    color: inherit;
+    transition: color 0.15s ease;
+  }
+
+  .meta li:has(> a:hover) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .meta a:hover {
+    color: var(--accent);
   }
 
   .period {

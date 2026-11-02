@@ -1,12 +1,13 @@
 ---
 import { skillById } from "../data/skills";
+import { toLocale } from "../i18n";
 
 interface Props {
   id: string;
 }
 
 const { id } = Astro.props;
-const skill = skillById(id);
+const skill = skillById(id, toLocale(Astro.params.lang));
 ---
 
 {

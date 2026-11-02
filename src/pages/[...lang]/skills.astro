@@ -1,18 +1,25 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import { skills } from "../data/skills";
+import Layout from "../../layouts/Layout.astro";
+import { skillsFor } from "../../data/skills";
+import { localeStaticPaths, toLocale, ui } from "../../i18n";
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = toLocale(Astro.params.lang);
+const t = ui[locale];
+const skills = skillsFor(locale);
 ---
 
-<Layout title="Skills — Kaenirr">
+<Layout title={`${t.nav.skills} — Kaenirr`}>
   <section class="page">
-    <h1>Skills</h1>
+    <h1>{t.nav.skills}</h1>
 
     <input
       id="skill-search"
       class="search"
       type="search"
-      placeholder="Search skills…"
-      aria-label="Search skills"
+      placeholder={t.skills.search}
+      aria-label={t.skills.searchLabel}
       autocomplete="off"
     />
 
@@ -24,8 +31,8 @@ import { skills } from "../data/skills";
             type="button"
             data-tilt
             data-skill={skill.id}
-            data-name={skill.name.toLowerCase()}
-            data-category={skill.category.toLowerCase()}
+            data-name={skill.name.toLocaleLowerCase(locale)}
+            data-category={skill.category.toLocaleLowerCase(locale)}
           >
             <span class="glow" aria-hidden="true" />
             <span class="content">
@@ -38,7 +45,7 @@ import { skills } from "../data/skills";
     </div>
 
     <p class="empty" id="skill-empty" hidden>
-      No skills match “<span></span>”.
+      {t.skills.noMatch} „<span></span>“.
     </p>
   </section>
 </Layout>
@@ -123,7 +130,9 @@ import { skills } from "../data/skills";
   const emptyTerm = empty.querySelector("span") as HTMLElement;
 
   input?.addEventListener("input", () => {
-    const query = input.value.trim().toLowerCase();
+    const query = input.value
+      .trim()
+      .toLocaleLowerCase(document.documentElement.lang);
     let visible = 0;
     for (const card of cards) {
       const match =

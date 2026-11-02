@@ -1,26 +1,20 @@
 ---
 import { Picture } from "astro:assets";
-import Layout from "../layouts/Layout.astro";
-import avatar from "../assets/avatar.png";
-import { navItems } from "../nav";
+import Layout from "../../layouts/Layout.astro";
+import avatar from "../../assets/avatar.png";
+import { navItems, type NavItem } from "../../nav";
+import { localeStaticPaths, localizePath, toLocale, ui } from "../../i18n";
 
-const cards: Record<string, { blurb: string; icon: string }> = {
-  "/skills": {
-    blurb: "Tools & tech I build with",
-    icon: `<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>`,
-  },
-  "/experience": {
-    blurb: "Where I've worked",
-    icon: `<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>`,
-  },
-  "/projects": {
-    blurb: "Things I've made",
-    icon: `<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m12 3 8 4.5-8 4.5-8-4.5z"/><path d="M12 12v9"/>`,
-  },
-  "/contact": {
-    blurb: "Get in touch",
-    icon: `<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>`,
-  },
+export const getStaticPaths = localeStaticPaths;
+
+const locale = toLocale(Astro.params.lang);
+const t = ui[locale];
+
+const icons: Record<NavItem["key"], string> = {
+  skills: `<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>`,
+  experience: `<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>`,
+  projects: `<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m12 3 8 4.5-8 4.5-8-4.5z"/><path d="M12 12v9"/>`,
+  contact: `<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>`,
 };
 ---
 
@@ -36,23 +30,21 @@ const cards: Record<string, { blurb: string; icon: string }> = {
           sizes="120px"
           width={120}
           height={120}
-          alt="Portrait of Martin"
+          alt={t.home.avatarAlt}
           loading="eager"
           fetchpriority="high"
         />
       </div>
       <div class="intro">
-        <h1>Hi, I'm <span class="accent">Kaenirr</span>.</h1>
-        <p>
-          I'm a 3D artist/programmer consumed by my desire to learn everything.
-        </p>
+        <h1>{t.home.greeting} <span class="accent">Kaenirr</span>.</h1>
+        <p>{t.home.tagline}</p>
       </div>
     </section>
 
     <nav class="grid" aria-label="Sections">
       {
         navItems.map((item) => (
-          <a class="glow-card big" href={item.href} data-tilt>
+          <a class="glow-card big" href={localizePath(item.href, locale)} data-tilt>
             <span class="glow" aria-hidden="true" />
             <span class="content">
               <svg
@@ -64,11 +56,11 @@ const cards: Record<string, { blurb: string; icon: string }> = {
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 aria-hidden="true"
-                set:html={cards[item.href].icon}
+                set:html={icons[item.key]}
               />
               <span class="text">
-                <span class="label">{item.label}</span>
-                <span class="blurb">{cards[item.href].blurb}</span>
+                <span class="label">{t.nav[item.key]}</span>
+                <span class="blurb">{t.home.blurbs[item.key]}</span>
               </span>
               <svg
                 class="arrow"

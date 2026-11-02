@@ -1,13 +1,15 @@
+import type { ui } from "./i18n";
+
 export interface NavItem {
-  label: string;
+  key: keyof (typeof ui)["en"]["nav"];
   href: string;
 }
 
 export const navItems: NavItem[] = [
-  { label: "Skills", href: "/skills" },
-  { label: "Experience", href: "/experience" },
-  { label: "Projects", href: "/projects" },
-  { label: "Contact", href: "/contact" },
+  { key: "skills", href: "/skills" },
+  { key: "experience", href: "/experience" },
+  { key: "projects", href: "/projects" },
+  { key: "contact", href: "/contact" },
 ];
 
 export const siteName = "Kaenirr";

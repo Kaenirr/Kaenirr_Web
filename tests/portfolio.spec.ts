@@ -86,7 +86,7 @@ test("tilt tracks the cursor and promotes the card only while hovered", async ({
 test("skills page lists all skills and filters via search", async ({ page }) => {
   await page.goto("/skills");
   const cards = page.locator("#skill-grid .skill");
-  await expect(cards).toHaveCount(7);
+  await expect(cards).toHaveCount(9);
 
   await page.locator("#skill-search").fill("blend");
   await expect(cards.filter({ hasText: "Blender" })).toBeVisible();
@@ -120,10 +120,10 @@ test("skill tag in a project opens the toast without following the card link", a
   page,
 }) => {
   await page.goto("/projects");
-  await page.locator(".tags [data-skill='unity']").first().click();
+  await page.locator(".tags [data-skill='ai-coding']").first().click();
   const toast = page.locator("#skill-toast");
   await expect(toast).toBeVisible();
-  await expect(toast.locator(".name")).toHaveText("Unity");
+  await expect(toast.locator(".name")).toHaveText("AI-Assisted Coding");
   await expect(page).toHaveURL(/\/projects\/?$/);
 });
 
@@ -148,4 +148,94 @@ test("theme toggle flips, persists across reload and navigation", async ({
 test("no theme flash: data-theme present before paint", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-theme", /light|dark/);
+});
+
+test("Czech home is served under /cs with localized text and links", async ({
+  page,
+}) => {
+  await page.goto("/cs/");
+  await expect(page.locator("html")).toHaveAttribute("lang", "cs");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Ahoj");
+  const sections = page.locator("nav[aria-label='Sections'] a");
+  await expect(sections.first()).toHaveAttribute("href", "/cs/skills");
+  await expect(page.getByRole("link", { name: "Kaenirr" })).toHaveAttribute(
+    "href",
+    "/cs/",
+  );
+});
+
+test("language toggle switches to the same page in the other language and back", async ({
+  page,
+}) => {
+  await page.goto("/skills");
+  await expect(page.locator("#lang-toggle")).toHaveText("CZ");
+  await page.locator("#lang-toggle").click();
+  await expect(page).toHaveURL(/\/cs\/skills\/?$/);
+  await expect(page.locator("#lang-toggle")).toHaveText("EN");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Dovednosti");
+
+  await page.locator("#lang-toggle").click();
+  await expect(page).toHaveURL(/\/skills\/?$/);
+  await expect(page).not.toHaveURL(/\/cs\//);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Skills");
+});
+
+test("language toggle on the home page goes between / and /cs/", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.locator("#lang-toggle").click();
+  await expect(page).toHaveURL(/\/cs\/$/);
+  await page.locator("#lang-toggle").click();
+  await expect(page).toHaveURL(/:\d+\/$/);
+});
+
+test("skill toast shows Czech text on Czech pages", async ({ page }) => {
+  await page.goto("/cs/skills");
+  await page.locator("[data-skill='3d-printing']").first().click();
+  const toast = page.locator("#skill-toast");
+  await expect(toast.locator(".name")).toHaveText("3D tisk");
+  await expect(toast.locator(".cat")).toHaveText("Výroba");
+});
+
+test("Czech ongoing role duration is recomputed with Czech units", async ({
+  page,
+}) => {
+  await page.goto("/cs/experience");
+  const live = page.locator(".duration[data-ongoing-since]").first();
+  const start = await live.getAttribute("data-ongoing-since");
+  await expect(live).toHaveText(`· ${formatDuration(start!, null, "cs")}`);
+});
+
+for (const path of ["/experience", "/cs/experience"]) {
+  test(`header fits a phone screen without horizontal scroll (${path})`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(path);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBe(0);
+  });
+}
+
+test("company name in experience links to its site in a new tab", async ({
+  page,
+}) => {
+  await page.goto("/experience");
+  const link = page.locator(".meta a", { hasText: "Trisgram" });
+  await expect(link).toHaveAttribute("href", "https://trisgram.com");
+  await expect(link).toHaveAttribute("target", "_blank");
+  await expect(link).toHaveAttribute("rel", /noopener/);
+});
+
+test("Trisgine and Drone Pilot are tagged on the Trisgram role", async ({
+  page,
+}) => {
+  await page.goto("/experience");
+  const tags = page.locator(".skills");
+  await expect(tags.locator("[data-skill='drone-pilot']")).toBeVisible();
+  await tags.locator("[data-skill='trisgine']").click();
+  await expect(page.locator("#skill-toast .name")).toHaveText("Trisgine");
 });
