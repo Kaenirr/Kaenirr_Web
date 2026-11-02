@@ -1,6 +1,6 @@
 # Kaenirr_Web — Portfolio
 
-Static personal portfolio for Martin ("Kaenirr"), a 3D artist/programmer. Built with **Astro 6 + TypeScript**, served as static HTML/CSS, deployed to **GitHub Pages** on the custom domain **kaenirr.com**.
+Static personal portfolio for Martin ("Kaenirr"), a 3D artist/programmer. Built with **Astro 6 + TypeScript**, served as static HTML/CSS, deployed to **Cloudflare Pages** on the custom domain **kaenirr.com**.
 
 ## Why this stack
 
@@ -29,7 +29,7 @@ src/
   scripts/tilt.ts            # cursor-tracking 3D tilt + underglow for any [data-tilt] element
   styles/theme.css           # color tokens (:root / [data-theme="dark"]) + shared .glow-card utilities
   assets/avatar.png          # source portrait; astro:assets derives the avatar, favicon, apple-touch-icon
-public/                      # served as-is: CNAME (kaenirr.com)
+public/                      # static files served as-is
 tests/portfolio.spec.ts      # Playwright e2e
 ```
 
@@ -50,11 +50,11 @@ tests/portfolio.spec.ts      # Playwright e2e
 
 ## Routing & domain
 
-Custom domain → site is served from root: `site: "https://kaenirr.com"` in `astro.config.mjs`, `base` left unset. `public/CNAME` holds the bare domain and is copied into `dist/` automatically. Do **not** set a `/<repo>/` base — that's only for `*.github.io` project pages.
+Custom domain → site is served from root: `site: "https://kaenirr.com"` in `astro.config.mjs`, `base` left unset. The domain is attached to the `kaenirr-web` Pages project in the Cloudflare dashboard (Custom domains), not via a `CNAME` file.
 
 ## Deploy
 
-`.github/workflows/deploy.yml` runs on push to `main`: **test → build → deploy**. It runs the Playwright suite, builds with `withastro/action`, and publishes via `actions/deploy-pages`. A red test run blocks the deploy. Repo Settings → Pages → Source = "GitHub Actions"; no `gh-pages` branch.
+`.github/workflows/deploy.yml` runs on push to `main`: **test → build → deploy**. It runs the Playwright suite, builds with `npm run build`, and uploads `dist/` to the Cloudflare Pages project `kaenirr-web` via `cloudflare/wrangler-action` (`pages deploy`). A red test run blocks the deploy. PRs run tests only. Requires repo secrets `CLOUDFLARE_API_TOKEN` (Account → Cloudflare Pages: Edit) and `CLOUDFLARE_ACCOUNT_ID`. The Pages project is a Direct Upload project — Cloudflare's own Git integration stays off so the test gate can't be bypassed.
 
 ## Tests
 
